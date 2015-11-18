@@ -1,0 +1,185 @@
+# Reference - http://manual.macromates.com/en/language_grammars
+
+scopeName: 'source.hocon'
+name: 'HOCON'
+fileTypes: [
+  'conf'
+]
+patterns: [
+  {
+    include: '#hash-comment'
+  }
+  {
+    include: '#slashes-comment'
+  }
+  {
+    include: '#time-unit'
+  }
+  {
+    include: '#number'
+  }
+  {
+    include: '#keyword'
+  }
+  {
+    include: '#substitution'
+  }
+  {
+    include: '#string'
+  }
+  {
+    include: '#multiline-string'
+  }
+  {
+    include: '#list'
+  }
+  {
+    include: '#object'
+  }
+]
+repository:
+  "hash-comment":
+    captures:
+      "0":
+        name: "comment.line.number-sign.hocon"
+    match: '(#.*$\\n?)'
+  keyword:
+    patterns: [
+      {
+        match: "\\+="
+        name: "keyword.operator.hocon"
+      }
+      {
+        captures:
+          "1":
+            name: "keyword.other.boolean.hocon"
+        match: "(?:^|\\s)(true|false|yes|no|on|off|null)(?=$|\\s)"
+      }
+      {
+        begin: "(?:^|\\s)(include (?:url|file|classpath))\\s*\\("
+        beginCaptures:
+          "1":
+            name: "keyword.other.include.hocon"
+        end: "\\)"
+        patterns: [
+          {
+            include: "#string"
+          }
+        ]
+      }
+      {
+        captures:
+          "1":
+            name: "keyword.other.include.hocon"
+        match: "(?:^|\\s)(include)\\s"
+        patterns: [
+          {
+            include: "#string"
+          }
+        ]
+      }
+    ]
+  list:
+    begin: "\\["
+    captures:
+      "0":
+        name: "punctuation.definition.list.hocon"
+    end: "\\]"
+    name: "meta.structure.array.hocon"
+    patterns: [
+      {
+        include: "#value"
+      }
+      {
+        match: ","
+        name: "punctuation.separator.array.hocon"
+      }
+      {
+        match: "([^\\s\\]])"
+        name: "invalid.illegal.expected-list-separator.hocon"
+      }
+    ]
+  "multiline-string":
+    begin: "\"\"\""
+    captures:
+      "0":
+        name: "punctuation.definition.string.hocon"
+    end: "\"\"\""
+    name: "string.quoted.triple.hocon"
+    patterns: [
+      {
+        match: "(\\\\(?:[\"\\\\/bfnrt]|u[0-9a-fA-F]{4}))"
+        name: "constant.character.escape.hocon"
+      }
+      {
+        match: "\\\\."
+        name: "invalid.illegal.unrecognized-string-escape.hocon"
+      }
+    ]
+  name:
+    match: "([a-zA-Z_][a-zA-Z0-9_$\\.-]*)"
+    name: "entity.name.function.hocon"
+  number:
+    match: "(-?(?:0|[1-9]\\d*)(?:(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)?)"
+    name: "constant.numeric.hocon"
+  object:
+    begin: "\\{"
+    captures:
+      "0":
+        name: "punctuation.definition.section.hocon"
+    end: "\\}"
+    patterns: [
+      {
+        include: "#name"
+        name: "entity.name.function.hocon"
+      }
+      {
+        match: "((?:=|:)|\\s*(?=\\{))"
+        name: "punctuation.separator.key-value.hocon"
+      }
+      {
+        include: "#value"
+      }
+    ]
+  "slashes-comment":
+    captures:
+      "0":
+        name: "punctuation.definition.comment.hocon"
+    match: "(//.*$\\n?)"
+  string:
+    begin: "\""
+    captures:
+      "0":
+        name: "punctuation.definition.string.hocon"
+    end: "\""
+    name: "string.quoted.double.hocon"
+    patterns: [
+      {
+        match: "(\\\\(?:[\"\\\\/bfnrt]|u[0-9a-fA-F]{4}))"
+        name: "constant.character.escape.hocon"
+      }
+      {
+        match: "\\\\."
+        name: "invalid.illegal.unrecognized-string-escape.hocon"
+      }
+    ]
+  substitution:
+    begin: "(\\$\\{\\??)"
+    captures:
+      "0":
+        name: "variable.parameter.substitution.hocon"
+    end: "(\\})"
+    name: "variable.parameter.substitution.hocon"
+    patterns: [
+      {
+        match: "([a-zA-Z_][a-zA-Z0-9_$\\.-]*)"
+        name: "variable.parameter.substitution.hocon"
+      }
+    ]
+  "time-unit":
+    captures:
+      "1":
+        name: "constant.numeric.time.hocon"
+      "2":
+        name: "keyword.other.time.unit.hocon"
+    match: "(\\d+)\\s*(nanoseconds?|microseconds?|milliseconds?|seconds?|minutes?|hours?|days?|ns|us|ms|s|m|h|d)"
