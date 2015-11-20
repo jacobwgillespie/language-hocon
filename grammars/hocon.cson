@@ -1,156 +1,103 @@
-# Reference - http://manual.macromates.com/en/language_grammars
-
-scopeName: 'source.hocon'
-name: 'HOCON'
 fileTypes: [
-  'conf'
+  "conf"
 ]
+name: "HOCON"
 patterns: [
   {
-    include: '#hash-comment'
+    include: "#duration-long"
   }
   {
-    include: '#slashes-comment'
+    include: "#bytesize-long"
   }
   {
-    include: '#time-unit'
+    include: "#duration-short"
   }
   {
-    include: '#number'
+    include: "#bytesize-short"
   }
   {
-    include: '#keyword'
+    include: "#variables"
   }
   {
-    include: '#substitution'
+    include: "#constant"
   }
   {
-    include: '#string'
+    include: "#string"
   }
   {
-    include: '#multiline-string'
+    include: "#comments"
   }
   {
-    include: '#list'
+    include: "#keywords"
   }
   {
-    include: '#object'
+    include: "#number"
+  }
+  {
+    include: "#ustring"
+  }
+  {
+    match: '(?:^[ \t]*([\\w-]+)\\s*?({|=))'
+    captures:
+      '1':
+        'name': 'entity.name.tag.hocon'
+      '2':
+        'name': 'punctuation.separator.key-value.hocon'
+    end: '(\\=|{)'
   }
 ]
 repository:
-  "hash-comment":
-    captures:
-      "0":
-        name: "comment.line.number-sign.hocon"
-    match: '(#.*$\\n?)'
-  keyword:
+  "bytesize-long":
+    comment: "handles byte-based units (long version)"
+    match: "\\b\\d+((kilo|mega|giga|tera|peta|exa|zetta|yotta|kibi|mebi|gibi|tebi|pebi|exbi|zebo|yobi)?byte[s]?)\\b"
+    name: "constant.numeric.byte.long.hocon"
+  "bytesize-short":
+    comment: "handles byte-based units (short version)"
+    match: "\\b\\d+(([kMGTPEZY]B)|([KMGTPEZY]i[B]?)|([kmgtpezybB]))\\b"
+    name: "constant.numeric.byte.short.hocon"
+  comments:
     patterns: [
       {
-        match: "\\+="
-        name: "keyword.operator.hocon"
+        captures:
+          "1":
+            name: "punctuation.definition.comment.hocon"
+        match: "(//).*$\\n?"
+        name: "comment.line.double-slash.hocon"
       }
       {
         captures:
           "1":
-            name: "keyword.other.boolean.hocon"
-        match: "(?:^|\\s)(true|false|yes|no|on|off|null)(?=$|\\s)"
-      }
-      {
-        begin: "(?:^|\\s)(include (?:url|file|classpath))\\s*\\("
-        beginCaptures:
-          "1":
-            name: "keyword.other.include.hocon"
-        end: "\\)"
-        patterns: [
-          {
-            include: "#string"
-          }
-        ]
-      }
-      {
-        captures:
-          "1":
-            name: "keyword.other.include.hocon"
-        match: "(?:^|\\s)(include)\\s"
-        patterns: [
-          {
-            include: "#string"
-          }
-        ]
+            name: "punctuation.definition.comment.hocon"
+        match: "(#).*$\\n?"
+        name: "comment.line.pound.hocon"
       }
     ]
-  list:
-    begin: "\\["
+  constant:
+    match: "[^-]\\b((?:true|false|null|on|off|yes|no))\\b[^-]"
     captures:
-      "0":
-        name: "punctuation.definition.list.hocon"
-    end: "\\]"
-    name: "meta.structure.array.hocon"
+      '1':
+        name: "constant.language.hocon"
+  "duration-long":
+    comment: "handles durations (long version)"
+    match: "\\b\\d+(day|hour|minute|millisecond|microsecond|nanosecond|second)[s]?\\b"
+    name: "constant.numeric.duration.long.hocon"
+  "duration-short":
+    comment: "handles durations (short version)"
+    match: "\\b(\\d+)(d|h|ns|ms|us|s)\\b"
+    name: "constant.numeric.duration.short.hocon"
+  keywords:
     patterns: [
       {
-        include: "#value"
-      }
-      {
-        match: ","
-        name: "punctuation.separator.array.hocon"
-      }
-      {
-        match: "([^\\s\\]])"
-        name: "invalid.illegal.expected-list-separator.hocon"
+        match: "\\b(include|url|file|classpath)\\b"
+        name: "keyword.other.source.hocon"
       }
     ]
-  "multiline-string":
-    begin: "\"\"\""
-    captures:
-      "0":
-        name: "punctuation.definition.string.hocon"
-    end: "\"\"\""
-    name: "string.quoted.triple.hocon"
-    patterns: [
-      {
-        match: "(\\\\(?:[\"\\\\/bfnrt]|u[0-9a-fA-F]{4}))"
-        name: "constant.character.escape.hocon"
-      }
-      {
-        match: "\\\\."
-        name: "invalid.illegal.unrecognized-string-escape.hocon"
-      }
-    ]
-  name:
-    match: "([a-zA-Z_][a-zA-Z0-9_$\\.-]*)"
-    name: "entity.name.function.hocon"
   number:
-    match: "(-?(?:0|[1-9]\\d*)(?:(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)?)"
-    name: "constant.numeric.hocon"
-  object:
-    begin: "\\{"
-    captures:
-      "0":
-        name: "punctuation.definition.section.hocon"
-    end: "\\}"
-    patterns: [
-      {
-        include: "#name"
-        name: "entity.name.function.hocon"
-      }
-      {
-        match: "((?:=|:)|\\s*(?=\\{))"
-        name: "punctuation.separator.key-value.hocon"
-      }
-      {
-        include: "#value"
-      }
-    ]
-  "slashes-comment":
-    captures:
-      "0":
-        name: "punctuation.definition.comment.hocon"
-    match: "(//.*$\\n?)"
+    comment: "handles integer and decimal numbers"
+    match: "(\\b\\-?\\d+(\\.\\d+)?([eE]\\d+)?\\b)"
+    name: "constant.numeric.zzz.simple.numbers.hocon"
   string:
     begin: "\""
-    captures:
-      "0":
-        name: "punctuation.definition.string.hocon"
     end: "\""
     name: "string.quoted.double.hocon"
     patterns: [
@@ -163,23 +110,15 @@ repository:
         name: "invalid.illegal.unrecognized-string-escape.hocon"
       }
     ]
-  substitution:
-    begin: "(\\$\\{\\??)"
+  ustring:
+    comment: "unquoted strings"
+    match: "([^=\\{\\}\\[\\]\\s][^0-9=\\{\\}\\[\\]][^=\\{\\}\\[\\]\\s]*)$"
     captures:
-      "0":
-        name: "variable.parameter.substitution.hocon"
-    end: "(\\})"
-    name: "variable.parameter.substitution.hocon"
-    patterns: [
-      {
-        match: "([a-zA-Z_][a-zA-Z0-9_$\\.-]*)"
-        name: "variable.parameter.substitution.hocon"
-      }
-    ]
-  "time-unit":
-    captures:
-      "1":
-        name: "constant.numeric.time.hocon"
-      "2":
-        name: "keyword.other.time.unit.hocon"
-    match: "(\\d+)\\s*(nanoseconds?|microseconds?|milliseconds?|seconds?|minutes?|hours?|days?|ns|us|ms|s|m|h|d)"
+      '1':
+        name: 'entity.name.tag.hocon'
+    name: "string.other.zzz.unquoted.hocon"
+  variables:
+    comment: "variable references"
+    match: "\\$\\{[^\\}]*\\}"
+    name: "storage.type.source.hocon"
+scopeName: "source.hocon"
