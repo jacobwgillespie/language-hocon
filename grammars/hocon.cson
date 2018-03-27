@@ -22,6 +22,9 @@ patterns: [
     include: "#constant"
   }
   {
+    include: "#mstring"
+  }
+  {
     include: "#string"
   }
   {
@@ -96,6 +99,11 @@ repository:
     comment: "handles integer and decimal numbers"
     match: "(\\b\\-?\\d+(\\.\\d+)?([eE]\\d+)?\\b)"
     name: "constant.numeric.zzz.simple.numbers.hocon"
+  mstring:
+    comment: "handles multi-line strings"
+    begin: "\"\"\""
+    end: "\"\"\""
+    name: "string.quoted.triple.hocon"
   string:
     begin: "\""
     end: "\""
