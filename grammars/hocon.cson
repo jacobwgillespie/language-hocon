@@ -40,7 +40,7 @@ patterns: [
     include: "#ustring"
   }
   {
-    match: '(?:^[ \t]*([\\w-]+)\\s*?({|=))'
+    match: '(?:^[ \t]*([\\w-]+)\\s*?({|=|:))'
     captures:
       '1':
         'name': 'entity.name.tag.hocon'
