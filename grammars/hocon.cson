@@ -1,5 +1,6 @@
 fileTypes: [
-  "conf"
+  "conf",
+  "hocon"
 ]
 name: "HOCON"
 patterns: [
@@ -40,23 +41,23 @@ patterns: [
     include: "#ustring"
   }
   {
-    match: '(?:^[ \t]*([\\w-]+)\\s*?({|=|:))'
+    match: '(?:[ \t]*([\\w-]+)\\s*?({|=|:))'
     captures:
       '1':
         'name': 'entity.name.tag.hocon'
       '2':
         'name': 'punctuation.separator.key-value.hocon'
-    end: '(\\=|{)'
   }
 ]
 repository:
+   # https://github.com/lightbend/config/blob/main/HOCON.md#size-in-bytes-format
   "bytesize-long":
     comment: "handles byte-based units (long version)"
     match: "\\b\\d+((kilo|mega|giga|tera|peta|exa|zetta|yotta|kibi|mebi|gibi|tebi|pebi|exbi|zebo|yobi)?byte[s]?)\\b"
     name: "constant.numeric.byte.long.hocon"
   "bytesize-short":
     comment: "handles byte-based units (short version)"
-    match: "\\b\\d+(([kMGTPEZY]B)|([KMGTPEZY]i[B]?)|([kmgtpezybB]))\\b"
+    match: "\\b\\d+(([kMGTPEZY]B)|([KMGTPEZY]B?)|([KMGTPEZY]iB?)|([kmgtpezybB]))\\b"
     name: "constant.numeric.byte.short.hocon"
   comments:
     patterns: [
@@ -120,7 +121,7 @@ repository:
     ]
   ustring:
     comment: "unquoted strings"
-    match: "([^=\\{\\}\\[\\]\\s][^0-9=\\{\\}\\[\\]][^=\\{\\}\\[\\]\\s]*)$"
+    match: "([^:=\\{\\}\\[\\]\\s,][^0-9:=\\{\\}\\[\\],][^=:\\{\\}\\[\\]\\s,]*)"
     captures:
       '1':
         name: 'entity.name.tag.hocon'
